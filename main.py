@@ -1,7 +1,8 @@
 import pygame
 import math
 
-def pixel_search(picture, find_colour, replacement_colour, threshold):
+
+def replace_surface_colours(picture, find_colour, replacement_colour, threshold):
     pixels = pygame.PixelArray(picture)
     for x in xrange(0, picture.get_width()):
         for y in xrange(0, picture.get_height()):
@@ -27,14 +28,11 @@ def colour_close_enough(colour_one, colour_two, threshold):
 pygame.init()
 picture = pygame.image.load('murica.png')
 picture = picture.convert(24)
-#palette = pygame.image.load('palette.png')
-#palette = picture.convert(24)
+palette = pygame.image.load('palette.png')
+palette = palette.convert(24)
 screen = pygame.display.set_mode((640, 480))
-colour_under_mouse = pygame.Color (0,0,0)
-colour_on_palette = pygame.Color (255,255,255)
-
-# test with hollywood-style whitewashing
-#pixel_search(picture, pygame.Color(105, 54, 51), pygame.Color(231, 213, 201), 40)
+colour_on_picture = pygame.Color(0, 0, 0)
+colour_on_palette = pygame.Color(255, 255, 255)
 
 # temporarily scale up the picture
 picture = pygame.transform.scale(picture, (picture.get_width() * 4, picture.get_height() * 4))
@@ -47,12 +45,14 @@ while running:
             running = False
         mouse_position = pygame.mouse.get_pos()
         if event.type == pygame.MOUSEBUTTONDOWN:
-            #pixel_search(picture, colour_under_mouse, pygame.Color(255, 255, 255), 20)
-            thingy = picture.get_rect()
-            if thingy.collidepoint(mouse_position):
-                colour_under_mouse = picture.get_at(mouse_position)
-
+            # Act only if the mouse is in the areas of the picture or the palette.
+            if picture.get_rect().collidepoint(mouse_position):
+                colour_on_picture = picture.get_at(mouse_position)
+            elif palette.get_rect().move(picture.get_width(), 0).collidepoint(mouse_position):  # unreadable?
+                # Replace the prior chosen colour straight away (todo: add button?)
+                relative_mouse_position = (mouse_position[0] - picture.get_width(), mouse_position[1])
+                replace_surface_colours(picture, colour_on_picture, palette.get_at(relative_mouse_position), 20)
 
     screen.blit(picture, (0, 0))
-    #screen.blit(palette, (6, 36))
+    screen.blit(palette, (picture.get_width(), 0))
     pygame.display.flip()

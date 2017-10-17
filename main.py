@@ -4,8 +4,8 @@ import math
 
 def replace_surface_colours(picture, find_colour, replacement_colour, threshold):
     pixels = pygame.PixelArray(picture)
-    for x in xrange(0, picture.get_width()):
-        for y in xrange(0, picture.get_height()):
+    for x in xrange(picture.get_width()):
+        for y in xrange(picture.get_height()):
             pixel_colour = picture.unmap_rgb(pixels[x, y])
             if colour_close_enough(pixel_colour, find_colour, threshold):
                 pixel_colour = replacement_colour
@@ -31,8 +31,8 @@ picture = picture.convert(24)
 palette = pygame.image.load('palette.png')
 palette = palette.convert(24)
 screen = pygame.display.set_mode((640, 480))
-colour_on_picture = pygame.Color(0, 0, 0)
-colour_on_palette = pygame.Color(255, 255, 255)
+#colour_on_picture = pygame.Color(0, 0, 0)
+#colour_on_palette = pygame.Color(255, 255, 255)
 
 # temporarily scale up the picture
 picture = pygame.transform.scale(picture, (picture.get_width() * 4, picture.get_height() * 4))
@@ -43,6 +43,7 @@ while running:
         if (event.type == pygame.QUIT or
                 (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE)):
             running = False
+            pygame.image.save(picture, 'saved.png')
         mouse_position = pygame.mouse.get_pos()
         if event.type == pygame.MOUSEBUTTONDOWN:
             # Act only if the mouse is in the areas of the picture or the palette.

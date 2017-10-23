@@ -8,6 +8,7 @@ PICTURE_SCALE = 4
 COLOUR_THRESHOLD = 20
 
 
+# Functions
 def replace_surface_colours(picture,
                             find_colour,
                             replacement_colour,

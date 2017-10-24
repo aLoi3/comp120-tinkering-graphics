@@ -1,5 +1,5 @@
 # comp120-tinkering-graphics
-Our GitHub link: https://github.com/aLoi3/comp120-tinkering-graphics/
+Our GitHub link: https://github.com/aLoi3/comp120-tinkering-graphics/  
 Python Code for Re-purposing Graphics Algorithms
 
 # Contract

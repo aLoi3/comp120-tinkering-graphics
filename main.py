@@ -5,8 +5,8 @@ import math
 import tkFileDialog
 
 # Parameters
-WINDOW_WIDTH = 640
-WINDOW_HEIGHT = 480
+# WINDOW_WIDTH = 640
+# WINDOW_HEIGHT = 480
 PICTURE_SCALE = 4
 COLOUR_THRESHOLD = 20
 
@@ -62,14 +62,13 @@ def colour_close_enough(colour_one, colour_two, threshold):
 
 
 def save_image():
-    file_path = tkFileDialog.asksaveasfilename(title = 'Save image')
+    file_path = tkFileDialog.asksaveasfilename(title='Save image')
     pygame.image.save(picture, file_path)
 
 
 
-# Init PyGame and window
+# Init PyGame
 pygame.init()
-screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 
 # Load images
 picture = pygame.image.load('murica.png')
@@ -81,6 +80,10 @@ palette = palette.convert(24)
 picture = pygame.transform.scale(picture,
                                  (picture.get_width() * PICTURE_SCALE,
                                   picture.get_height() * PICTURE_SCALE))
+
+# Init window
+screen = pygame.display.set_mode((picture.get_width() + palette.get_width(),
+                                  palette.get_height()))
 
 # Init variables
 colour_on_picture = None  # the user-selected picture colour to replace

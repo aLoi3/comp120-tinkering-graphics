@@ -1,5 +1,8 @@
+# Standard library imports
 import pygame
 import math
+# Third party imports
+import tkFileDialog
 
 # Parameters
 WINDOW_WIDTH = 640
@@ -58,6 +61,12 @@ def colour_close_enough(colour_one, colour_two, threshold):
     return colour_distance(colour_one, colour_two) < threshold
 
 
+def save_image():
+    file_path = tkFileDialog.asksaveasfilename(title = 'Save image')
+    pygame.image.save(picture, file_path)
+
+
+
 # Init PyGame and window
 pygame.init()
 screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
@@ -91,7 +100,7 @@ while running:
                 (event.type == pygame.KEYDOWN and
                  event.key == pygame.K_ESCAPE)):
             running = False
-            pygame.image.save(picture, 'saved.png')
+            save_image()
         if event.type == pygame.MOUSEBUTTONDOWN:
             # Prepare to compare mouse position to picture and palette position
             mouse_position = pygame.mouse.get_pos()

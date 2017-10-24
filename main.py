@@ -16,16 +16,21 @@ def replace_surface_colours(picture,
                             find_colour,
                             replacement_colour,
                             threshold):
-    """Replaces all colours on a Surface with another, within a tolerance level
+    """Replaces all colours on a Surface with another, when within a
+       colour similarity threshold
 
     Arguments:
         picture (Surface) -- the Surface to be affected
         find_colour (pygame.Color) -- the colour to be replaced
-        replacement_colour (pygame.Color) -- the colour to replace it with
-        threshold (int) -- the tolerance when comparing pixels with find_colour
-    Returns: Nothing
+        replacement_colour (pygame.Color) -- the colour to replace it
+                                             with
+        threshold (int) -- the tolerance when comparing pixels with
+                           find_colour
+    Returns:
+        Nothing
     """
     pixels = pygame.PixelArray(picture)
+    # Loop through all pixels in image to find and replace colours
     for x in xrange(picture.get_width()):
         for y in xrange(picture.get_height()):
             pixel_colour = picture.unmap_rgb(pixels[x, y])
@@ -41,7 +46,8 @@ def colour_distance(colour_one, colour_two):
     Arguments:
         colour_one -- First colour to check
         colour_two -- Second colour to check against
-    Returns: (float) Distance between the colours
+    Returns:
+        (float) Distance between the colours
     """
     distance = math.sqrt(pow(colour_one.r - colour_two.r, 2)
                          + pow(colour_one.g - colour_two.g, 2)
@@ -50,21 +56,29 @@ def colour_distance(colour_one, colour_two):
 
 
 def colour_close_enough(colour_one, colour_two, threshold):
-    """Returns whether two colours are within a certain distance to each other
+    """Returns whether two colours are within a certain distance to each
+       other
 
     Arguments:
         colour_one -- First colour to check
         colour_two -- Second colour to check again
         threshold -- Distance threshold between them
-    Returns: (bool) Whether the colour distance is smaller than the threshold
+    Returns:
+        (bool) Whether the colour distance is smaller than the threshold
     """
     return colour_distance(colour_one, colour_two) < threshold
 
 
-def save_image():
-    file_path = tkFileDialog.asksaveasfilename(title = 'Save image')
-    pygame.image.save(picture, file_path)
+def save_image(picture):
+    """Saves the image to a user-selected file name"""
+    file_path = tkFileDialog.asksaveasfilename(
+        title='Save image',
+        filetypes=[('PNG image', '*.png'), ('JPG image', '*.jpg'),
+                   ('BMP image', '*.bmp')])
 
+    # Only save if file_path returned a valid path
+    if file_path is not None:
+        pygame.image.save(picture, file_path)
 
 
 # Init PyGame and window
@@ -99,10 +113,11 @@ while running:
         if (event.type == pygame.QUIT or
                 (event.type == pygame.KEYDOWN and
                  event.key == pygame.K_ESCAPE)):
+            save_image(picture)
             running = False
-            save_image()
         if event.type == pygame.MOUSEBUTTONDOWN:
-            # Prepare to compare mouse position to picture and palette position
+            # Prepare to compare mouse position to picture and palette
+            # position
             mouse_position = pygame.mouse.get_pos()
             picture_rect = picture.get_rect().move(picture_x, picture_y)
             palette_rect = palette.get_rect().move(palette_x, palette_y)
@@ -115,8 +130,8 @@ while running:
 
                 colour_on_picture = picture.get_at(relative_mouse_position)
             elif palette_rect.collidepoint(mouse_position):
-                # If the mouse is within the palette, replace the colour(s)
-                # with the colour of the pixel under the mouse
+                # If the mouse is within the palette, replace the
+                # colour(s) with the colour of the pixel under the mouse
                 if colour_on_picture is not None:
                     relative_mouse_position = (
                         mouse_position[0] - palette_x,

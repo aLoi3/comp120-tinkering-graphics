@@ -87,6 +87,46 @@ def save_image(picture):
         pygame.image.save(picture, file_path)
 
 
+def on_image_click(picture, palette, picture_xy, palette_xy):
+    """Detects mouse position relative to picture and palette, and
+       performs the colour swap based on mouse position
+
+    Arguments:
+        picture -- Image whose colours are to be replaced
+        palette -- Palette with the replacement colour options
+        picture_xy -- Position of the image
+        palette_xy -- Position of the palette
+    Returns:
+        None
+    """
+    # Global variables are evil but so are we
+    global colour_on_picture, colour_on_palette
+
+    # Prepare to compare mouse position to picture and palette
+    # position
+    mouse_xy = pygame.mouse.get_pos()
+    picture_rect = picture.get_rect().move(picture_xy[0], picture_xy[1])
+    palette_rect = palette.get_rect().move(palette_xy[0], palette_xy[1])
+
+    if picture_rect.collidepoint(mouse_xy):
+        # If mouse is within image, select the colour to replace
+        relative_mouse_xy = (
+            mouse_xy[0] - picture_xy[0],
+            mouse_xy[1] - picture_xy[1])
+
+        colour_on_picture = picture.get_at(relative_mouse_xy)
+    elif palette_rect.collidepoint(mouse_xy):
+        # If the mouse is within the palette, replace the
+        # colour(s) with the colour of the pixel under the mouse
+        if colour_on_picture is not None:
+            relative_mouse_xy = (mouse_xy[0] - palette_xy[0],
+                                       mouse_xy[1] - palette_xy[1])
+
+            replace_surface_colours(
+                picture, colour_on_picture,
+                palette.get_at(relative_mouse_xy),
+                COLOUR_THRESHOLD)
+
 # Init PyGame
 pygame.init()
 
@@ -140,31 +180,9 @@ while running:
             save_image(picture)
             running = False
         if event.type == pygame.MOUSEBUTTONDOWN:
-            # Prepare to compare mouse position to picture and palette
-            # position
-            mouse_position = pygame.mouse.get_pos()
-            picture_rect = picture.get_rect().move(picture_x, picture_y)
-            palette_rect = palette.get_rect().move(palette_x, palette_y)
-
-            if picture_rect.collidepoint(mouse_position):
-                # If mouse is within image, select the colour to replace
-                relative_mouse_position = (
-                    mouse_position[0] - picture_x,
-                    mouse_position[1] - picture_y)
-
-                colour_on_picture = picture.get_at(relative_mouse_position)
-            elif palette_rect.collidepoint(mouse_position):
-                # If the mouse is within the palette, replace the
-                # colour(s) with the colour of the pixel under the mouse
-                if colour_on_picture is not None:
-                    relative_mouse_position = (
-                        mouse_position[0] - palette_x,
-                        mouse_position[1] - palette_y)
-
-                    replace_surface_colours(
-                        picture, colour_on_picture,
-                        palette.get_at(relative_mouse_position),
-                        COLOUR_THRESHOLD)
+            on_image_click(picture, palette,
+                           (picture_x, picture_y),
+                           (palette_x, palette_y))
 
     # Clear the screen (needed for the text antialiasing to look good)
     screen.fill((0, 0, 0))

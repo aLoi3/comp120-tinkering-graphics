@@ -5,8 +5,9 @@ import math
 import tkFileDialog
 
 # Parameters
-PICTURE_SCALE = 4
 COLOUR_THRESHOLD = 20
+PICTURE_WIDTH = 256
+PICTURE_HEIGHT = 256
 
 
 # Functions
@@ -68,7 +69,13 @@ def colour_close_enough(colour_one, colour_two, threshold):
 
 
 def save_image(picture):
-    """Saves the image to a user-selected file name"""
+    """Saves the image to a user-selected file name
+
+    Arguments:
+        picture -- Image to save
+    Returns:
+        None
+    """
     file_path = tkFileDialog.asksaveasfilename(
         title='Save image',
         filetypes=[('PNG image', '*.png'), ('JPG image', '*.jpg'),
@@ -82,22 +89,16 @@ def save_image(picture):
 # Init PyGame
 pygame.init()
 
-# Load images
-picture = pygame.image.load('murica.png')
+# Load colour palette image
 palette = pygame.image.load('palette.png')
-picture = picture.convert(24)
 palette = palette.convert(24)
 
-# Scale up the editable picture
-picture = pygame.transform.scale(picture,
-                                 (picture.get_width() * PICTURE_SCALE,
-                                  picture.get_height() * PICTURE_SCALE))
+# Load main image (scaled to PICTURE_WIDTH and HEIGHT)
+picture = pygame.image.load('image.png')
+picture = pygame.transform.scale(picture, (PICTURE_WIDTH, PICTURE_HEIGHT))
+picture = picture.convert(24)
 
-# Init window
-screen = pygame.display.set_mode((picture.get_width() + palette.get_width(),
-                                  palette.get_height()))
-
-# Init variables
+# Init image-related variables
 colour_on_picture = None  # the user-selected picture colour to replace
 colour_on_palette = None  # the user-selected replacement colour on the palette
 
@@ -105,6 +106,27 @@ picture_x = 0  # position of the editable picture
 picture_y = 0
 palette_x = picture.get_width()  # position of the palette
 palette_y = 0
+
+# Load minimalist UI and init variables
+info_text_font = pygame.font.SysFont('Calibri', 24, True)
+info_text_lines = ['Click somewhere on the picture to pick a colour',
+                   'Then click on the palette to replace that colour!',
+                   'Press ESC to save and quit']
+info_text_surfaces = []
+
+info_text_y = max(picture.get_height(), palette.get_height())
+info_text_height = 0  # total height of UI text area
+
+# Pre-render UI text from the list of text lines above
+for index, line in enumerate(info_text_lines):
+    info_text_surfaces.append(
+        info_text_font.render(line, True, (255, 255, 255)))
+    info_text_height += info_text_surfaces[index].get_height()
+
+# Init window
+window_width = picture.get_width() + palette.get_width()
+window_height = info_text_y + info_text_height
+screen = pygame.display.set_mode((window_width, window_height))
 
 # Begin main loop
 running = True
@@ -143,7 +165,18 @@ while running:
                         palette.get_at(relative_mouse_position),
                         COLOUR_THRESHOLD)
 
-    # Render to screen
+    # Clear the screen (needed for the text antialiasing to look good)
+    screen.fill((0, 0, 0))
+
+    # Render images
     screen.blit(picture, (picture_x, picture_y))
     screen.blit(palette, (palette_x, palette_y))
+
+    # Render UI text
+    current_y = info_text_y
+    for text_surface in info_text_surfaces:
+        screen.blit(text_surface, (0, current_y))
+        current_y += text_surface.get_height()
+
+    # Splat!
     pygame.display.flip()

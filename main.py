@@ -79,7 +79,8 @@ def save_image(picture):
     file_path = tkFileDialog.asksaveasfilename(
         title='Save image',
         filetypes=[('PNG image', '*.png'), ('JPG image', '*.jpg'),
-                   ('BMP image', '*.bmp')])
+                   ('BMP image', '*.bmp')],
+        defaultextension='.png')
 
     # Only save if file_path returned a valid path
     if file_path is not '':
@@ -107,7 +108,7 @@ picture_y = 0
 palette_x = picture.get_width()  # position of the palette
 palette_y = 0
 
-# Load minimalist UI and init variables
+# Init minimalist UI and variables
 info_text_font = pygame.font.SysFont('Calibri', 24, True)
 info_text_lines = ['Click somewhere on the picture to pick a colour',
                    'Then click on the palette to replace that colour!',

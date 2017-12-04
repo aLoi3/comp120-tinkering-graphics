@@ -9,3 +9,5 @@ Python Code for Re-purposing Graphics Algorithms
 3) Make a function to search through its pixels and replace a colour with another
 4) Add colour palettes to enable user to select the colour
 5) Save the image
+
+[![Build status](https://travis-ci.org/aLoi3/comp120-tinkering-graphics.svg?master)](https://travis-ci.org/aLoi3)
